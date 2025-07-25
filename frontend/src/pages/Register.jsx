@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../redux/authSlice'; // ✅
+import { loginSuccess } from '../redux/authSlice';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch(); // ✅
+    const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({
         username: '',
@@ -26,25 +26,27 @@ const RegisterPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
 
         if (formData.password !== formData.confirmPassword) {
-            return setError("Passwords do not match");
+            return setError('Passwords do not match');
         }
 
         try {
             const { username, email, password, role } = formData;
-            const res = await axios.post('http://localhost:8000/api/auth/register', {
+            const res = await axios.post('http://localhost:9000/api/auth/register', {
                 username,
                 email,
                 password,
                 role,
             });
 
-            // ✅ Update Redux store
-            dispatch(loginSuccess({
-                token: res.data.token,
-                user: res.data.user,
-            }));
+            dispatch(
+                loginSuccess({
+                    token: res.data.token,
+                    user: res.data.user,
+                })
+            );
 
             navigate('/dashboard');
         } catch (err) {
@@ -53,24 +55,34 @@ const RegisterPage = () => {
         }
     };
 
-
     return (
-        <div className="min-h-screen flex flex-col md:flex-row">
-
+        <section className="min-h-screen grid grid-cols-1 md:grid-cols-2 items-center">
             {/* Left Image */}
-            <div className="hidden md:flex w-1/2 bg-gradient-to-br from-blue-100 via-white to-purple-100 items-center justify-center">
-                <img src="/src/assets/Images/register-illustration.svg" alt="Register" className="max-w-[80%]" />
+            <div className="hidden md:flex flex-col bg-gradient-to-br from-blue-100 via-white to-purple-100 items-center justify-center h-full">
+                <h1 className="text-4xl font-bold mb-4">Join Us 🎉</h1>
+                <p className="text-center text-lg max-w-sm">
+                    Create an account to access your {' '}
+                    <span className='bg-clip-text text-transparent bg-gradient-to-r  from-blue-600 via-violet-500 to-purple-800'>BlogVerse</span> {' '}
+                    Dashboard and unlock insights.
+                </p>
+                <img
+                    src="/src/assets/Images/Registration.png"
+                    alt="Register"
+                    className="max-w-[80%]"
+                />
             </div>
 
             {/* Right Form */}
-            <div className="w-full md:w-1/2 flex items-center justify-center px-6 py-12">
+            <div className="w-full flex items-center justify-center px-6 py-12">
                 <div className="w-full max-w-md">
-                    <h2 className="text-3xl font-extrabold text-center text-purple-700 mb-6">
-                        Create Your BlogVerse Account
+                    <h2 className="text-3xl font-extrabold text-center text-purple-700 mb-2">
+                        Join Us 🎉
                     </h2>
+                    <p className="text-center text-gray-600 text-sm mb-6">
+                        Create an account to access your BlogVerse dashboard and unlock insights.
+                    </p>
 
                     <form onSubmit={handleSubmit} className="space-y-5 bg-white shadow-lg rounded-xl p-6">
-
                         {/* Username */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Username</label>
@@ -175,7 +187,7 @@ const RegisterPage = () => {
                     </p>
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 
