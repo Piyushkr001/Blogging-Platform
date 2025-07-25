@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../utils/axiosInstance';
 import { loginSuccess } from '../redux/authSlice';
+import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const LoginPage = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -26,7 +27,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setLoading(true);
 
     try {
       const res = await axios.post('/auth/login', formData);
@@ -38,9 +39,12 @@ const LoginPage = () => {
         })
       );
 
+      toast.success('Login successful!');
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      toast.error(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,8 +54,11 @@ const LoginPage = () => {
       <div className="hidden md:flex flex-col w-1/2 bg-gradient-to-br from-blue-100 via-white to-purple-100 items-center justify-center">
         <h1 className="text-4xl font-bold mb-4">Welcome 👋</h1>
         <p className="text-lg text-center max-w-md">
-          Sign in to explore your {' '}
-          <span className='bg-clip-text text-transparent bg-gradient-to-r  from-blue-600 via-violet-500 to-purple-800'>BlogVerse</span>{' '}dashboard.
+          Sign in to explore your{' '}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-violet-500 to-purple-800">
+            BlogVerse
+          </span>{' '}
+          dashboard.
         </p>
         <img
           src="/src/assets/Images/Login.png"
@@ -117,18 +124,16 @@ const LoginPage = () => {
               </select>
             </div>
 
-            {/* Error */}
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition disabled:opacity-50"
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
 
-            <p className='mt-2 text-sm text-center text-gray-600'>
+            <p className="mt-2 text-sm text-center text-gray-600">
               Having trouble logging in?{' '}
               <Link to="/forgot-password">
                 <span className="text-blue-600 hover:text-blue-800">Forgot Password</span>
