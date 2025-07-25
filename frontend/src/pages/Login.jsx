@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
@@ -49,9 +47,14 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Image */}
-      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-blue-100 via-white to-purple-100 items-center justify-center">
+      <div className="hidden md:flex flex-col w-1/2 bg-gradient-to-br from-blue-100 via-white to-purple-100 items-center justify-center">
+       <h1 className="text-4xl font-bold mb-4">Welcome 👋</h1>
+        <p className="text-lg text-center max-w-md">
+          Sign in to explore your {' '} 
+          <span className='bg-clip-text text-transparent bg-gradient-to-r  from-blue-600 via-violet-500 to-purple-800'>BlogVerse</span>{' '}dashboard.
+        </p>
         <img
-          src="/src/assets/Images/login-illustration.svg"
+          src="/src/assets/Images/Login.png"
           alt="Login Illustration"
           className="max-w-[80%]"
         />

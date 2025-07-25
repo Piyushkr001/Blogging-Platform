@@ -11,7 +11,7 @@ export default function LandingPage() {
         <div className="text-center md:text-left space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold">
             Welcome to {''}
-            <span className='bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>BlogVerse</span>
+            <span className='bg-gradient-to-r from-blue-600 via-violet-500 to-purple-800 bg-clip-text text-transparent'>BlogVerse</span>
           </h1>
           <p className="text-lg sm:text-xl mt-2 text-gray-700">
             Create, share, and grow your voice through beautiful, interactive blogs.

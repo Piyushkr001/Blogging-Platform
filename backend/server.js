@@ -17,10 +17,12 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 // DB + Server
-mongoose.connect(process.env.MONGO_URI)
+  const PORT = process.env.PORT || 8000;
+
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(process.env.PORT, () =>
-      console.log(`Server running on http://localhost:${process.env.PORT}`)
-    );
+    console.log('✅ MongoDB connected');
+    app.listen(PORT, () => console.log(`🚀 Server @ http://localhost:${PORT}`));
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.error('❌ MongoDB error:', err));
