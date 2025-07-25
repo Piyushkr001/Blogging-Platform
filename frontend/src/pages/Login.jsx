@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from '../utils/axiosInstance'; 
+import axios from '../utils/axiosInstance';
 import { loginSuccess } from '../redux/authSlice';
 
 const LoginPage = () => {
@@ -48,9 +48,9 @@ const LoginPage = () => {
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Image */}
       <div className="hidden md:flex flex-col w-1/2 bg-gradient-to-br from-blue-100 via-white to-purple-100 items-center justify-center">
-       <h1 className="text-4xl font-bold mb-4">Welcome 👋</h1>
+        <h1 className="text-4xl font-bold mb-4">Welcome 👋</h1>
         <p className="text-lg text-center max-w-md">
-          Sign in to explore your {' '} 
+          Sign in to explore your {' '}
           <span className='bg-clip-text text-transparent bg-gradient-to-r  from-blue-600 via-violet-500 to-purple-800'>BlogVerse</span>{' '}dashboard.
         </p>
         <img
@@ -127,6 +127,13 @@ const LoginPage = () => {
             >
               Login
             </button>
+
+            <p className='mt-2 text-sm text-center text-gray-600'>
+              Having trouble logging in?{' '}
+              <Link to="/forgot-password">
+                <span className="text-blue-600 hover:text-blue-800">Forgot Password</span>
+              </Link>
+            </p>
           </form>
 
           {/* Register link */}
