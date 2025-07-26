@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../redux/authSlice';
 import { toast } from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -28,33 +30,58 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    const { username, email, password, confirmPassword, role } = formData;
+
+    if (!username || !email || !password || !confirmPassword) {
+      return toast.error('Please fill in all fields');
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return toast.error('Invalid email format');
+    }
+
+    if (password.length < 6) {
+      return toast.error('Password must be at least 6 characters');
+    }
+
+    if (password !== confirmPassword) {
       return toast.error('Passwords do not match');
     }
 
     try {
       setLoading(true);
-      const { username, email, password, role } = formData;
-      const res = await axios.post('http://localhost:9000/api/auth/register', {
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE}/api/auth/register`, {
         username,
         email,
         password,
         role,
       });
 
-      dispatch(
-        loginSuccess({
-          token: res.data.token,
-          user: res.data.user,
-        })
-      );
-
+      dispatch(loginSuccess({ token: res.data.token, user: res.data.user }));
       toast.success('Registration successful!');
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      const { email, name } = decoded;
+
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE}/api/auth/google-login`, {
+        email,
+        username: name,
+      });
+
+      dispatch(loginSuccess({ token: res.data.token, user: res.data.user }));
+      toast.success('Google Sign-Up successful!');
+      navigate('/dashboard');
+    } catch {
+      toast.error('Google Sign-Up failed');
     }
   };
 
@@ -180,6 +207,15 @@ const RegisterPage = () => {
             >
               {loading ? 'Registering...' : 'Register'}
             </button>
+
+            {/* Google Login */}
+            <div className="mt-4 flex flex-col items-center justify-center">
+              <p className="mb-3 text-sm text-gray-600">or Sign up with</p>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error('Google Sign-Up Failed')}
+              />
+            </div>
           </form>
 
           <p className="mt-4 text-center text-sm text-gray-600">

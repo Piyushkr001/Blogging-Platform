@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from '../utils/axiosInstance';
 import { loginSuccess } from '../redux/authSlice';
 import { toast } from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -32,12 +34,10 @@ const LoginPage = () => {
     try {
       const res = await axios.post('/auth/login', formData);
 
-      dispatch(
-        loginSuccess({
-          token: res.data.token,
-          user: res.data.user,
-        })
-      );
+      dispatch(loginSuccess({
+        token: res.data.token,
+        user: res.data.user,
+      }));
 
       toast.success('Login successful!');
       navigate('/dashboard');
@@ -45,6 +45,29 @@ const LoginPage = () => {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      const { email, name } = decoded;
+
+      // You may POST this to backend or auto login
+      const res = await axios.post('/auth/google-login', {
+        email,
+        username: name,
+      });
+
+      dispatch(loginSuccess({
+        token: res.data.token,
+        user: res.data.user,
+      }));
+
+      toast.success('Google login successful!');
+      navigate('/dashboard');
+    } catch {
+      toast.error('Google login failed');
     }
   };
 
@@ -103,7 +126,7 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-3 text-sm text-blue-600 font-medium focus:outline-none"
+                  className="absolute inset-y-0 right-3 text-sm text-blue-600 font-medium"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -124,7 +147,6 @@ const LoginPage = () => {
               </select>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -133,6 +155,13 @@ const LoginPage = () => {
               {loading ? 'Logging in...' : 'Login'}
             </button>
 
+            {/* Google Login Button */}
+            <div className="mt-2 flex flex-col items-center justify-center">
+              <p className='mb-3 text-sm text-gray-600'>or Log In with</p>
+              <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => toast.error('Google Sign-In Failed')} />
+            </div>
+
+
             <p className="mt-2 text-sm text-center text-gray-600">
               Having trouble logging in?{' '}
               <Link to="/forgot-password">
@@ -140,6 +169,7 @@ const LoginPage = () => {
               </Link>
             </p>
           </form>
+
 
           {/* Register link */}
           <p className="mt-4 text-center text-sm text-gray-600">
